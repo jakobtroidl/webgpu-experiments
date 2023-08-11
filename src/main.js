@@ -1,3 +1,5 @@
+import shader from './shader.wgsl';
+
 
 async function init() {
     // Check for WebGPU support
@@ -10,26 +12,9 @@ async function init() {
     const adapter = await gpu.requestAdapter();
     const device = await adapter.requestDevice();
 
-    // Shader code
-    const shaderCode = `
-            [[block]] struct Data {
-                values: array<f32, 4>;
-            };
-            
-            [[binding(0), group(0)]] var<storage_buffer> src1: Data;
-            [[binding(1), group(0)]] var<storage_buffer> src2: Data;
-            [[binding(2), group(0)]] var<storage_buffer> dst: Data;
-
-            [[stage(compute), workgroup_size(1)]] 
-            fn main([[builtin(global_invocation_id)]] GlobalId: vec3<u32>) -> void {
-                let index: u32 = GlobalId.x;
-                dst.values[index] = src1.values[index] + src2.values[index];
-            }
-        `;
-
     // Create shader module
     const shaderModule = device.createShaderModule({
-        code: shaderCode
+        code: shader
     });
 
     // Create a buffer for input and output
